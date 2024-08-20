@@ -1,0 +1,36 @@
+livro = {
+    id_livro: "",
+    id_editora: "",
+    id_escritor: "",
+    nome_livro: ""
+}
+
+escritor = {
+    id_escritor: "",
+    nome_escritor: "",
+    biblioteca: [], //livros podem ser excluidos, o historico não
+    historico_escritor: []
+}
+
+editora = {
+    id_editora: "",
+    nome_editora: "",
+    contrato: {
+        id_contrato: ""
+        id_escritor: "",
+        id_livro: ""
+    },
+    biblioteca_contratos: [contrato1, contrato2,...] // uma editora pode ter vários contratos
+}
+
+leitor = {
+    id_leitor: "",
+    biblioteva_livros: [livro1,livro2, ...], // serve para livros favoritos
+    status: "" // livro.status = "lendo" || "pretendo ler" || "já li",
+    historico_leitor: []
+}
+
+usuario = { // os atributos já estão salvos, à depender do tipo eles podem mudar
+    Atributos de Leitor = 1/Escritor = 2/Editora = 3, // um obejto para ser salvo em um json emulando um db
+    tipo: 
+}
