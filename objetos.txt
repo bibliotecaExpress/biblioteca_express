@@ -32,5 +32,11 @@ leitor = {
 
 usuario = { // os atributos já estão salvos, à depender do tipo eles podem mudar
     Atributos de Leitor = 1/Escritor = 2/Editora = 3, // um obejto para ser salvo em um json emulando um db
-    tipo: 
+    tipo: 0,
+    id_usuario: ""
+}
+
+admin = {
+    biblioteca_usuarios: [], // lista de usuários criados e salvos pelo json
+    senha: "",
 }
