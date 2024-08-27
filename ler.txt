@@ -1,0 +1,397 @@
+<App
+    <Controller
+        index.js
+
+    >
+    <Model
+        admin.js
+            const { GERAR_ID } = require("../../src/id.js");
+            const { LER_JSON, ESCREVER_JSON } = require("../../src/json-utils.js");
+
+            const admin = {
+            biblioteca_usuarios: LER_JSON('usuarios.json'),
+            senha: 'senha_secreta' // Substituir por uma senha segura
+            };
+
+            const registrarUsuario = (usuario) => {
+            usuario.id = GERAR_ID();
+            admin.biblioteca_usuarios.push(usuario);
+            ESCREVER_JSON('usuarios.json', admin.biblioteca_usuarios);
+            return { status: 201, message: 'Usuário registrado com sucesso' };
+            };
+
+            const atualizarUsuario = (idUsuario, novosDados) => {
+            const usuario = admin.biblioteca_usuarios.find(u => u.id === idUsuario);
+            if (usuario) {
+                Object.assign(usuario, novosDados);
+                ESCREVER_JSON('usuarios.json', admin.biblioteca_usuarios);
+                return { status: 200, message: 'Usuário atualizado com sucesso' };
+            }
+            return { status: 404, message: 'Usuário não encontrado' };
+            };
+
+            const apagarUsuario = (idUsuario) => {
+            const indice = admin.biblioteca_usuarios.findIndex(u => u.id === idUsuario);
+            if (indice !== -1) {
+                admin.biblioteca_usuarios.splice(indice, 1);
+                ESCREVER_JSON('usuarios.json', admin.biblioteca_usuarios);
+                return { status: 204, message: 'Usuário apagado com sucesso' };
+            }
+            return { status: 404, message: 'Usuário não encontrado' };
+            };
+
+            const listarUsuarios = () => {
+            return admin.biblioteca_usuarios;
+            };
+
+            // Função para autenticar o administrador
+            const autenticarAdmin = (senha) => {
+            return senha === admin.senha;
+            };
+
+            module.exports = {
+            registrarUsuario,
+            atualizarUsuario,
+            apagarUsuario,
+            listarUsuarios,
+            autenticarAdmin
+            };
+        editora.js
+            const { GERAR_ID } = require("../../src/id.js");
+            const { LER_JSON, ESCREVER_JSON } = require("../../src/json-utils.js");
+
+            // Carrega as editoras do arquivo
+            const editoras = LER_JSON('editoras.json');
+
+            const modelEditora = (body, id = GERAR_ID()) => ({
+            id_editora: id,
+            nome_editora: body.nome_editora,
+            biblioteca_contratos: []
+            });
+
+            // Funções CRUD
+
+            const indexEditoras = () => editoras;
+
+            const showEditora = (id) => editoras.find((el) => el.id_editora === id) || null;
+
+            const createEditora = (body) => {
+            const novaEditora = modelEditora(body);
+            editoras.push(novaEditora);
+            ESCREVER_JSON('editoras.json', editoras);
+            return { status: 201, message: 'Editora criada com sucesso' };
+            };
+
+            const updateEditora = (body, id) => {
+            const indice = editoras.findIndex((el) => el.id_editora === id);
+            if (indice !== -1) {
+                editoras[indice] = { ...editoras[indice], ...body };
+                ESCREVER_JSON('editoras.json', editoras);
+                return { status: 200, message: 'Editora atualizada com sucesso' };
+            }
+            return { status: 404, message: 'Editora não encontrada' };
+            };
+
+            const deleteEditora = (id) => {
+            const indice = editoras.findIndex((el) => el.id_editora === id);
+            if (indice !== -1) {
+                editoras.splice(indice, 1);
+                ESCREVER_JSON('editoras.json', editoras);
+                return { status: 204, message: 'Editora removida com sucesso' };
+            }
+            return { status: 404, message: 'Editora não encontrada' };
+            };
+
+            // Funções para gerenciar contratos
+
+            const addContrato = (idEditora, contrato) => {
+            const editora = showEditora(idEditora);
+            if (editora) {
+                editora.biblioteca_contratos.push(contrato);
+                ESCREVER_JSON('editoras.json', editoras);
+                return { status: 200, message: 'Contrato adicionado com sucesso' };
+            }
+            return { status: 404, message: 'Editora não encontrada' };
+            };
+
+            // ... outras funções para gerenciar contratos
+
+            module.exports = {
+            createEditora,
+            indexEditoras,
+            showEditora,
+            updateEditora,
+            deleteEditora,
+            addContrato
+            };
+        escritor.js
+            const { GERAR_ID } = require("../../src/id.js");
+            const { LER_JSON, ESCREVER_JSON } = require("../../src/json-utils.js");
+
+            // Carrega os escritores do arquivo
+            const escritores = LER_JSON('escritores.json');
+
+            const modelEscritor = (body, id = GERAR_ID()) => ({
+            id_escritor: id,
+            nome_escritor: body.nome_escritor,
+            biblioteca: [], // Inicializa a biblioteca vazia
+            historico_escritor: []
+            });
+
+            // Funções CRUD
+
+            const indexEscritores = () => escritores;
+
+            const showEscritor = (id) => escritores.find((el) => el.id_escritor === id) || null;
+
+            const createEscritor = (body) => {
+            const novoEscritor = modelEscritor(body);
+            escritores.push(novoEscritor);
+            ESCREVER_JSON('escritores.json', escritores);
+            return { status: 201, message: 'Escritor criado com sucesso' };
+            };
+
+            const updateEscritor = (body, id) => {
+            const indice = escritores.findIndex((el) => el.id_escritor === id);
+            if (indice !== -1) {
+                escritores[indice] = { ...escritores[indice], ...body };
+                ESCREVER_JSON('escritores.json', escritores);
+                return { status: 200, message: 'Escritor atualizado com sucesso' };
+            }
+            return { status: 404, message: 'Escritor não encontrado' };
+            };
+
+            const deleteEscritor = (id) => {
+            const indice = escritores.findIndex((el) => el.id_escritor === id);
+            if (indice !== -1) {
+                escritores.splice(indice, 1);
+                ESCREVER_JSON('escritores.json', escritores);
+                return { status: 204, message: 'Escritor removido com sucesso' };
+            }
+            return { status: 404, message: 'Escritor não encontrado' };
+            };
+
+            module.exports = {
+            createEscritor,
+            indexEscritores,
+            showEscritor,
+            updateEscritor,
+            deleteEscritor
+            };
+        leitor.js
+            const { GERAR_ID } = require("../../src/id.js");
+            const { LER_JSON, ESCREVER_JSON } = require("../../src/json-utils.js");
+
+            // Carrega os leitores do arquivo
+            const leitores = LER_JSON('leitores.json');
+
+            const modelLeitor = (body, id = GERAR_ID()) => ({
+            id_leitor: id,
+            biblioteca_livros: [],
+            status: body.status || "pretendo ler", // Define um status padrão
+            historico_leitor: []
+            });
+
+            // Funções CRUD
+
+            const indexLeitores = () => leitores;
+
+            const showLeitor = (id) => leitores.find((el) => el.id_leitor === id) || null;
+
+            const createLeitor = (body) => {
+            const novoLeitor = modelLeitor(body);
+            leitores.push(novoLeitor);
+            ESCREVER_JSON('leitores.json', leitores);
+            return { status: 201, message: 'Leitor criado com sucesso' };
+            };
+
+            const updateLeitor = (body, id) => {
+            const indice = leitores.findIndex((el) => el.id_leitor === id);
+            if (indice !== -1) {
+                leitores[indice] = { ...leitores[indice], ...body };
+                ESCREVER_JSON('leitores.json', leitores);
+                return { status: 200, message: 'Leitor atualizado com sucesso' };
+            }
+            return { status: 404, message: 'Leitor não encontrado' };
+            };
+
+            const deleteLeitor = (id) => {
+            const indice = leitores.findIndex((el) => el.id_leitor === id);
+            if (indice !== -1) {
+                leitores.splice(indice, 1);
+                ESCREVER_JSON('leitores.json', leitores);
+                return { status: 204, message: 'Leitor removido com sucesso' };
+            }
+            return { status: 404, message: 'Leitor não encontrado' };
+            };
+
+            const addLivroBiblioteca = (idLeitor, idLivro, status) => {
+                const leitor = showLeitor(idLeitor);
+            
+                if (!leitor) {
+                return { status: 404, message: 'Leitor não encontrado' };
+                }
+            
+                const livroExistente = leitor.biblioteca_livros.find(livro => livro.id_livro === idLivro);
+                if (livroExistente) {
+                return { status: 409, message: 'Livro já está na biblioteca' };
+                }
+            
+                leitor.biblioteca_livros.push({ id_livro, status });
+                ESCREVER_JSON('leitores.json', leitores);
+                return { status: 200, message: 'Livro adicionado à biblioteca com sucesso' };
+            };
+            
+            const removeLivroBiblioteca = (idLeitor, idLivro) => {
+            const leitor = showLeitor(idLeitor);
+
+            if (!leitor) {
+                return { status: 404, message: 'Leitor não encontrado' };
+            }
+
+            const indice = leitor.biblioteca_livros.findIndex(livro => livro.id_livro === idLivro);
+            if (indice === -1) {
+                return { status: 404, message: 'Livro não encontrado na biblioteca' };
+            }
+
+            const livroRemovido = leitor.biblioteca_livros.splice(indice, 1)[0];
+            leitor.historico_leitor.push(livroRemovido);
+            ESCREVER_JSON('leitores.json', leitores);
+            return { status: 200, message: 'Livro removido da biblioteca e adicionado ao histórico' };
+            };
+
+            module.exports = {
+            createLeitor,
+            indexLeitores,
+            showLeitor,
+            updateLeitor,
+            deleteLeitor,
+            addLivroBiblioteca,
+            removeLivroBiblioteca
+            };
+        livro.js
+            const { GERAR_ID } = require("../../src/id.js");
+            const { LER_JSON, ESCREVER_JSON } = require("../../src/json-utils.js");
+
+            const model = (body, id = GERAR_ID()) => ({
+            id_livro: id,
+            nome_livro: body.nome_livro,
+            id_editora: body.id_editora,
+            id_escritor: body.id_escritor
+            });  // definição do modelo
+
+            const livros = LER_JSON('livros.json'); // verificar vjson
+
+            const index = () => livros;
+
+            const show = (id) => livros.find((el) => el.id_livro === id) || null; // mostrar
+
+            const store = (body) => {
+            const novoLivro = model(body); // atribuindo como modelo
+            livros.push(novoLivro);
+            ESCREVER_JSON('livros.json', livros); // salvando como json
+            return { status: 201, message: 'Livro criado com sucesso' }; // armazenar
+            };
+
+            const update = (body, id) => {
+            const indice = livros.findIndex((el) => el.id_livro === id); // procurando o indice
+            if (indice !== -1) {
+                livros[indice] = model({ ...livros[indice], ...body }, id); // vrerificando modelo
+                ESCREVER_JSON('livros.json', livros); // sobreescrevendo json
+                return { status: 200, message: 'Livro atualizado com sucesso' };
+            }
+            return { status: 404, message: 'Livro não encontrado' };
+            };
+
+            const destroy = (id) => {
+            const indice = livros.findIndex((el) => el.id_livro === id); // procurando indice
+            if (indice !== -1) {
+                livros.splice(indice, 1); // apagando
+                ESCREVER_JSON('livros.json', livros); // sobreescrevendo json
+                return { status: 204, message: 'Livro removido com sucesso' };
+            }
+            return { status: 404, message: 'Livro não encontrado' };
+            };
+
+            module.exports = {
+            store,
+            index,
+            show,
+            update,
+            destroy,
+            };
+        usuario.js
+            const { GERAR_ID } = require("../../src/id.js");
+            const { LER_JSON, ESCREVER_JSON } = require("../../src/json-utils.js");
+
+            const usuarios = LER_JSON('usuarios.json'); // Carrega os usuários do arquivo
+
+            const TIPO_LEITOR = 1;
+            const TIPO_ESCRITOR = 2;
+            const TIPO_EDITORA = 3;
+
+            const salvarUsuario = (usuario) => {
+                usuario.id_usuario = GERAR_ID();
+                usuarios.push(usuario);
+                ESCREVER_JSON('usuarios.json', usuarios);
+                return { status: 201, message: 'Usuário salvo com sucesso' };
+            };
+
+            const selecionarTipo = (tipo) => {
+                // Lógica para criar um novo usuário com base no tipo
+                let novoUsuario = {};
+                switch (tipo) {
+                    case TIPO_LEITOR:
+                        // Cria um objeto com os atributos de um leitor
+                        novoUsuario = {
+                            tipo: TIPO_LEITOR,
+                            // ... outros atributos específicos para leitores
+                        };
+                        break;
+                    case TIPO_ESCRITOR:
+                        // Cria um objeto com os atributos de um escritor
+                        novoUsuario = {
+                            tipo: TIPO_ESCRITOR,
+                            // ... outros atributos específicos para escritores
+                        };
+                        break;
+                    case TIPO_EDITORA:
+                        // Cria um objeto com os atributos de uma editora
+                        novoUsuario = {
+                            tipo: TIPO_EDITORA,
+                            // ... outros atributos específicos para editoras
+                        };
+                        break;
+                    default:
+                        return { status: 400, message: 'Tipo de usuário inválido' };
+                }
+                return { status: 200, usuario: novoUsuario };
+            };
+
+            module.exports = {
+                salvarUsuario,
+                selecionarTipo
+            };
+    >
+    <View
+        tela_inicial.html
+            <!DOCTYPE html>
+
+            <html lang="pt-br">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Minha Página em Português</title>
+                </head>
+
+                <body>
+                    <h1>Bem-vindo ao meu site!</h1>
+                    <div>
+                        <h2>Adicione texto</h2>
+                        <input type="text" name="teste" placeholder="Escreva aqui">
+                    </div>
+                </body>
+
+            </html>
+    >
+<node_modules>
+<src>
